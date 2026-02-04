@@ -1,88 +1,158 @@
-const icons=["🍎","🍌","🍇","🍓"];
-let cards=[...icons,...icons];
-
-let first=null;
-let second=null;
-let lock=false;
-let moves=0;
-let matched=0;
-
-const board=document.getElementById("gameBoard");
-const movesText=document.getElementById("moves");
-const resetBtn=document.getElementById("resetBtn");
-
-function shuffle(arr){
- return arr.sort(()=>Math.random()-0.5);
+/* ===== RESET ===== */
+*{
+ margin:0;
+ padding:0;
+ box-sizing:border-box;
+ font-family:Arial, sans-serif;
 }
 
-function createCard(icon){
- const card=document.createElement("div");
- card.classList.add("card");
- card.dataset.icon=icon;
-
- card.innerHTML=`
- <div class="card-face card-front">${icon}</div>
- <div class="card-face card-back">?</div>
- `;
-
- card.addEventListener("click",flipCard);
- return card;
+body{
+ background:#f4f4f4;
+ padding:20px;
+ text-align:center;
 }
 
-function flipCard(){
- if(lock||this===first) return;
+/* ===== HEADER ===== */
+header{
+ margin-bottom:20px;
+}
 
- this.classList.add("flip");
+/* ===== MENU ===== */
+.menu{
+ margin-bottom:20px;
+}
 
- if(!first){
-   first=this;
-   return;
+.menu a{
+ text-decoration:none;
+ background:#3498db;
+ color:white;
+ padding:8px 14px;
+ margin:5px;
+ border-radius:6px;
+ display:inline-block;
+}
+
+.menu a:hover{
+ background:#2980b9;
+}
+
+/* ===== PRODUCT LIST ===== */
+.product-list{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+ gap:15px;
+ max-width:800px;
+ margin:auto;
+}
+
+.product{
+ background:white;
+ padding:10px;
+ border-radius:10px;
+ box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ===== ERROR TEXT ===== */
+.error{
+ color:red;
+ margin:10px;
+}
+
+/* ===== FORM ===== */
+.form{
+ max-width:320px;
+ margin:auto;
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+}
+
+.form input,
+.form button{
+ padding:10px;
+ border-radius:6px;
+ border:1px solid #ccc;
+}
+
+.form button{
+ background:#2ecc71;
+ color:white;
+ border:none;
+ cursor:pointer;
+}
+
+.form button:hover{
+ background:#27ae60;
+}
+
+/* ===== TIMER ===== */
+.warning{
+ color:red;
+ font-size:40px;
+ animation:blink 1s infinite;
+}
+
+@keyframes blink{
+ 50%{opacity:0.4;}
+}
+
+/* ===== MEMORY GAME ===== */
+.game-board{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:15px;
+ max-width:600px;
+ margin:20px auto;
+ perspective:1000px;
+}
+
+/* Mobile */
+@media(max-width:600px){
+ .game-board{
+   grid-template-columns:repeat(2,1fr);
  }
-
- second=this;
- moves++;
- movesText.textContent=moves;
-
- checkMatch();
 }
 
-function checkMatch(){
- if(first.dataset.icon===second.dataset.icon){
-   first.removeEventListener("click",flipCard);
-   second.removeEventListener("click",flipCard);
-   matched++;
-   resetTurn();
-
-   if(matched===icons.length){
-     setTimeout(()=>alert("🎉 Bạn thắng!"),300);
-   }
- }else{
-   lock=true;
-   setTimeout(()=>{
-     first.classList.remove("flip");
-     second.classList.remove("flip");
-     resetTurn();
-   },800);
- }
+.card{
+ position:relative;
+ width:100%;
+ aspect-ratio:1/1;
+ transform-style:preserve-3d;
+ transition:transform .6s;
+ cursor:pointer;
 }
 
-function resetTurn(){
- first=null;
- second=null;
- lock=false;
+.card.flip{
+ transform:rotateY(180deg);
 }
 
-function init(){
- board.innerHTML="";
- moves=0;
- matched=0;
- movesText.textContent=0;
-
- shuffle(cards).forEach(i=>{
-   board.appendChild(createCard(i));
- });
+.card-face{
+ position:absolute;
+ width:100%;
+ height:100%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:2rem;
+ border-radius:10px;
+ backface-visibility:hidden;
 }
 
-resetBtn.addEventListener("click",init);
+.card-front{
+ background:white;
+ transform:rotateY(180deg);
+}
 
-init();
+.card-back{
+ background:#3498db;
+ color:white;
+}
+
+/* BUTTON */
+button{
+ padding:10px 15px;
+ border:none;
+ border-radius:6px;
+ cursor:pointer;
+ margin-top:10px;
+}
