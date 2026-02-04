@@ -1,30 +1,88 @@
-.menu a {
-  margin-right: 10px;
+const icons=["🍎","🍌","🍇","🍓"];
+let cards=[...icons,...icons];
+
+let first=null;
+let second=null;
+let lock=false;
+let moves=0;
+let matched=0;
+
+const board=document.getElementById("gameBoard");
+const movesText=document.getElementById("moves");
+const resetBtn=document.getElementById("resetBtn");
+
+function shuffle(arr){
+ return arr.sort(()=>Math.random()-0.5);
 }
 
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+function createCard(icon){
+ const card=document.createElement("div");
+ card.classList.add("card");
+ card.dataset.icon=icon;
+
+ card.innerHTML=`
+ <div class="card-face card-front">${icon}</div>
+ <div class="card-face card-back">?</div>
+ `;
+
+ card.addEventListener("click",flipCard);
+ return card;
 }
 
-.product {
-  border: 1px solid #ccc;
-  padding: 10px;
+function flipCard(){
+ if(lock||this===first) return;
+
+ this.classList.add("flip");
+
+ if(!first){
+   first=this;
+   return;
+ }
+
+ second=this;
+ moves++;
+ movesText.textContent=moves;
+
+ checkMatch();
 }
 
-.form {
-  max-width: 300px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
+function checkMatch(){
+ if(first.dataset.icon===second.dataset.icon){
+   first.removeEventListener("click",flipCard);
+   second.removeEventListener("click",flipCard);
+   matched++;
+   resetTurn();
+
+   if(matched===icons.length){
+     setTimeout(()=>alert("🎉 Bạn thắng!"),300);
+   }
+ }else{
+   lock=true;
+   setTimeout(()=>{
+     first.classList.remove("flip");
+     second.classList.remove("flip");
+     resetTurn();
+   },800);
+ }
 }
 
-.warning {
-  color: red;
-  animation: blink 1s infinite;
+function resetTurn(){
+ first=null;
+ second=null;
+ lock=false;
 }
 
-@keyframes blink {
-  50% { opacity: 0.5; }
+function init(){
+ board.innerHTML="";
+ moves=0;
+ matched=0;
+ movesText.textContent=0;
+
+ shuffle(cards).forEach(i=>{
+   board.appendChild(createCard(i));
+ });
 }
+
+resetBtn.addEventListener("click",init);
+
+init();
